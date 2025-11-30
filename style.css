@@ -1,0 +1,110 @@
+/* 사용자 정의 스타일 및 애니메이션 */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #0d1117; /* 새벽 밤 배경색 */
+    color: #c9d1d9;
+    overflow-x: hidden;
+}
+
+/* 메인 제목 애니메이션 */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.title-animate {
+    opacity: 0; 
+    animation: fadeInUp 2s ease-out forwards;
+}
+
+/* LP 레코드판 스타일 */
+.lp-record {
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle at center, #2f343a 0%, #171b22 65%, #2f343a 100%);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
+    position: relative;
+    transform-origin: center;
+    transition: transform 0.5s ease-in-out;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 1.5rem;
+    color: #a87932;
+    border: 1px solid #2f343a;
+}
+
+.lp-record:hover {
+    transform: scale(1.05) rotate(5deg);
+}
+
+.lp-record::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: #a87932; /* 황금빛 레이블 */
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.lp-record::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #0d1117; /* 중앙 구멍 */
+    z-index: 10;
+}
+
+/* LP 레코드판 회전 애니메이션 */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.lp-record.is-playing {
+    animation: spin 4s linear infinite;
+}
+
+
+/* 스크롤 섹션 스타일 */
+.full-screen-section {
+    height: 100vh;
+    min-height: 600px; /* 모바일 대응 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+}
+
+/* 스크롤 스냅 컨테이너 */
+.scroll-snap-container {
+    scroll-snap-type: y mandatory;
+    overflow-y: scroll;
+    height: 100vh;
+}
+
+.scroll-snap-item {
+    scroll-snap-align: start;
+}
