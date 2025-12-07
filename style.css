@@ -84,7 +84,7 @@ body {
 }
 
 .lp-record.is-playing {
-    animation: spin 4s linear infinite;
+    animation: spin 9s linear infinite;
 }
 
 
