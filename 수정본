@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>힐링송 소개하기</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        /* 기본 스타일 */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0d1117;
+            color: #FFF4E6;
+            margin: 0;
+            overflow: hidden; /* 스크롤 차단 */
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* 페이드인 애니메이션 */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* 페이지 섹션 공통 */
+        .page-section {
+            display: none; /* 기본 숨김 */
+            width: 100%;
+            height: 100vh;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        /* 활성화된 페이지 */
+        .page-section.active {
+            display: flex;
+        }
+
+        /* 텍스트 등장 애니메이션 */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .title-animate {
+            opacity: 0; 
+            animation: fadeInUp 1.5s ease-out forwards;
+        }
+
+        /* LP 레코드판 스타일 */
+        .lp-record {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle at center, #2f343a 0%, #171b22 65%, #2f343a 100%);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
+            position: relative;
+            transform-origin: center;
+            transition: transform 0.5s ease-in-out;
+            border: 1px solid #2f343a;
+        }
+
+        .lp-record::before {
+            content: ''; position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); width: 70px; height: 70px;
+            border-radius: 50%; background: #a87932;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .lp-record::after {
+            content: ''; position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); width: 10px; height: 10px;
+            border-radius: 50%; background: #0d1117; z-index: 10;
+        }
+
+        /* LP 회전 애니메이션 */
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .lp-record.is-playing {
+            animation: spin 9s linear infinite;
+        }
+
+        /* 메뉴 카드 호버 효과 */
+        .menu-card {
+            transition: all 0.3s ease;
+        }
+        .menu-card:hover {
+            transform: translateY(-5px);
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <header id="main-header" class="page-section active bg-gray-900/90 relative overflow-hidden">
+        <div class="absolute inset-0 bg-cover bg-center opacity-40" 
+            style="background-image: url('https://placehold.co/1920x1080/1a202c/6a6e73?text=Cozy+night+view');">
+        </div>
+        
+        <div class="z-10 text-center flex flex-col items-center">
+            <h1 class="text-7xl md:text-8xl lg:text-9xl font-extrabold text-white title-animate">
+                힐링송
+            </h1>
+            <p class="mt-6 text-xl md:text-2xl text-gray-400 title-animate" style="animation-delay: 0.3s;">
+                고된 하루를 보내고 집에 와 조용히 숨을 고를 때
+            </p>
+            
+            <button onclick="navigateTo('menu-section')" class="mt-12 px-10 py-4 bg-indigo-600 hover:bg-indigo-500 text-white text-lg font-bold rounded-full shadow-lg transition transform hover:scale-105 title-animate" style="animation-delay: 0.6s;">
+                살펴보기 &rarr;
+            </button>
+        </div>
+    </header>
+
+    <section id="menu-section" class="page-section bg-gray-800">
+        <button onclick="navigateTo('main-header')" class="absolute top-8 right-8 text-white/70 hover:text-white flex items-center gap-2 transition bg-white/10 px-4 py-2 rounded-full z-50 cursor-pointer">
+            🏠 처음으로
+        </button>
+
+        <div class="text-center mb-12">
+            <h2 class="text-4xl font-bold text-white mb-4">어떤 노래를 듣고 싶나요?</h2>
+            <p class="text-gray-400">지금 기분이나 상황을 선택해보세요.</p>
+        </div>
+        
+        <div id="menu-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full max-w-6xl px-4">
+            </div>
+    </section>
+
+    <div id="song-container"></div>
+    
+    <script>
+        // 데이터 정의 (유튜브 링크 포함)
+        const songs = [
+            {
+                id: 'song-1',
+                context: '새벽 밤',
+                title: '별이 빛나는 밤에',
+                artist: '김새벽',
+                description: '도시의 소음이 잦아들 때, 창문으로 들어오는 차가운 공기와 함께 듣기 좋은 곡입니다.',
+                imageUrl: 'https://placehold.co/300x300/171b22/a87932?text=Song+1+Cover',
+                color: 'bg-gray-800',
+                youtubeUrl: 'https://youtu.be/xPp4F0spQOk?si=DzCjUQi1Phhsppy2'
+            },
+            {
+                id: 'song-2',
+                context: '운동하면서',
+                title: '숨 고르기',
+                artist: 'Running Mate',
+                description: '격렬한 운동 후 찾아오는 안정감을 담은 노래입니다. 심박수가 천천히 내려가듯 마음을 달래줍니다.',
+                imageUrl: 'https://placehold.co/300x300/1e2630/80848a?text=Song+2+Cover',
+                color: 'bg-indigo-900',
+                youtubeUrl: 'https://youtu.be/bJu93P5I5Z0?si=NBXNL1SY9iNy0rDG'
+            },
+            {
+                id: 'song-3',
+                context: '버스에서',
+                title: '창가에서 바라본 풍경',
+                artist: 'Journey Folk',
+                description: '창밖으로 빠르게 지나가는 풍경과 대비되는 잔잔함이 매력입니다. 목적지 없이 흘러가는 기분으로 듣기 좋습니다.',
+                imageUrl: 'https://placehold.co/300x300/283340/a0aec0?text=Song+3+Cover',
+                color: 'bg-blue-900',
+                youtubeUrl: 'https://youtu.be/dw7WtthpqhY?si=pc76JXBN7HSHFSSz'
+            },
+            {
+                id: 'song-4',
+                context: '꿀꿀할 때',
+                title: '다 괜찮아져',
+                artist: 'The Comforter',
+                description: '기분 전환이 필요할 때 듣는 희망찬 멜로디. 우울했던 마음을 털어내고 다시 일어설 힘을 줍니다.',
+                imageUrl: 'https://placehold.co/300x300/4a5568/e2e8f0?text=Song+4+Cover', 
+                color: 'bg-slate-800',
+                youtubeUrl: 'https://youtu.be/G75KwJjdd8Q?si=kEouLHshhbmcKCnB'
+            }
+        ];
+
+        // 화면 전환 함수
+        function navigateTo(targetId) {
+            const allPages = document.querySelectorAll('.page-section');
+            allPages.forEach(page => {
+                page.classList.remove('active');
+                const lp = page.querySelector('.lp-record');
+                if(lp) lp.classList.remove('is-playing');
+            });
+
+            const targetPage = document.getElementById(targetId);
+            if (targetPage) {
+                targetPage.classList.add('active');
+                const lp = targetPage.querySelector('.lp-record');
+                if(lp) lp.classList.add('is-playing');
+            }
+        }
+
+        // 초기화
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuContainer = document.getElementById('menu-container');
+            const songContainer = document.getElementById('song-container');
+
+            // 1. 메뉴 버튼 생성
+            songs.forEach(song => {
+                const buttonHtml = `
+                    <div onclick="navigateTo('${song.id}')" class="menu-card cursor-pointer bg-white/10 backdrop-blur-md border border-white/20 p-8 rounded-2xl flex flex-col items-center justify-center text-center h-64">
+                        <div class="text-4xl mb-4">🎵</div>
+                        <h3 class="text-2xl font-bold text-white mb-2">${song.context}</h3>
+                    </div>
+                `;
+                menuContainer.insertAdjacentHTML('beforeend', buttonHtml);
+            });
+
+            // 2. 노래 상세 페이지 생성
+            songs.forEach(song => {
+                const sectionHtml = `
+                    <section id="${song.id}" class="page-section ${song.color}">
+                        <div class="absolute top-8 w-full px-8 flex justify-between items-start z-20">
+                            <button onclick="navigateTo('menu-section')" class="text-white/70 hover:text-white flex items-center gap-2 transition bg-black/20 px-4 py-2 rounded-lg backdrop-blur-sm">
+                                &larr; 목록으로
+                            </button>
+                            <button onclick="navigateTo('main-header')" class="text-white/70 hover:text-white flex items-center gap-2 transition bg-black/20 px-4 py-2 rounded-lg backdrop-blur-sm">
+                                🏠 처음으로
+                            </button>
+                        </div>
+
+                        <div class="flex flex-col lg:flex-row items-center justify-center space-y-10 lg:space-y-0 lg:space-x-20 max-w-6xl mx-auto p-4">
+                            <div class="lp-record flex-shrink-0" style="background-image: url('${song.imageUrl}'); background-size: cover; background-position: center;">
+                                <div class="w-full h-full flex flex-col items-center justify-center text-center p-12 backdrop-filter backdrop-blur-sm bg-black/40 rounded-full">
+                                    <span class="text-white text-3xl font-bold">${song.artist}</span>
+                                    <span class="text-gray-300 text-lg mt-1">${song.title}</span>
+                                </div>
+                            </div>
+
+                            <div class="max-w-xl text-center lg:text-left">
+                                <div class="inline-block mb-4 px-3 py-1 bg-white/10 rounded-full text-sm font-semibold">${song.context}</div>
+                                <h2 class="text-4xl md:text-6xl font-extrabold mb-4 text-white">${song.title}</h2>
+                                <h3 class="text-xl md:text-2xl font-medium mb-6 text-gray-300">${song.artist}</h3>
+                                <p class="text-base md:text-lg text-gray-400 leading-relaxed border-l-4 border-white/50 pl-4">
+                                    ${song.description}
+                                </p>
+                                
+                                <button onclick="window.open('${song.youtubeUrl}', '_blank')" class="mt-8 px-6 py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition duration-300 shadow-md flex items-center justify-center gap-2 mx-auto lg:mx-0">
+                                    <span>▶</span> 유튜브에서 듣기
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+                `;
+                songContainer.insertAdjacentHTML('beforeend', sectionHtml);
+            });
+        });
+    </script>
+</body>
+</html>
